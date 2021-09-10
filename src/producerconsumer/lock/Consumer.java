@@ -1,4 +1,4 @@
-package producerconsumer;
+package producerconsumer.lock;
 
 import java.util.List;
 import java.util.Queue;
