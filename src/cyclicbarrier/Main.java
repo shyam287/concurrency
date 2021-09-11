@@ -17,13 +17,24 @@ public class Main {
         ExecutorService ec = Executors.newFixedThreadPool(4);
         List<Future<String>> futures = new ArrayList<>();
 
-        for (int i=0; i<2; i++) {
-            futures.add((Future<String>) ec.submit(runnable));
-            futures.add(ec.submit(callable));
+        for(int j=0; j< 4; j++) {
+
+            for (int i = 0; i < 2; i++) {
+                futures.add((Future<String>) ec.submit(runnable));
+                futures.add(ec.submit(callable));
+            }
+
+            try {
+                Thread.sleep(5000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            System.out.println("printing for iteration: " + j);
+            printFutures(futures);
+            if (barrier.getNumberWaiting() == 0) {
+                barrier.reset();
+            }
         }
-
-        printFutures(futures);
-
         shutdownThreads(ec);
 
     }
@@ -43,7 +54,7 @@ public class Main {
     private static Callable<String> getCallable(CyclicBarrier barrier) {
 
         return () -> {
-            System.out.println("awwating for barrier to open in callable task " + Thread.currentThread().getName());
+            System.out.println("awaiting for barrier to open in callable task " + Thread.currentThread().getName());
             barrier.await();
             System.out.println("barrier opened " + Thread.currentThread().getName());
             return "completed " + Thread.currentThread().getName();
